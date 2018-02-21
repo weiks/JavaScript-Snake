@@ -665,13 +665,25 @@ SNAKE.Board = SNAKE.Board || (function() {
             welcomeTxt.innerHTML = "JavaScript Snake<p></p>Use the <strong>arrow keys</strong> on your keyboard to play the game. " + fullScreenText + "<p></p>";
             var welcomeStart = document.createElement("button");
             welcomeStart.appendChild(document.createTextNode("Play Game"));
+            
+            var finishingLoadGame = function() {
+                me.setBoardState(1);
+                me.getBoardContainer().focus();                
+            }
+
             var loadGame = function() {
                 SNAKE.removeEventListener(window, "keyup", kbShortcut, false);
                 tmpElm.style.display = "none";
-                me.setBoardState(1);
-                me.getBoardContainer().focus();
+                console.log("load game");
+                document.querySelectorAll('.buy-quarters-button')[0].click();
+                console.log("buy quarters")
+                window.onQuartersCallback = function(data) {
+                                if (data.txId) {
+                                    return finishingLoadGame();
+                                }   
+                            }
             };
-            
+
             var kbShortcut = function(evt) {
                 if (!evt) var evt = window.event;
                 var keyNum = (evt.which) ? evt.which : evt.keyCode;
@@ -679,6 +691,7 @@ SNAKE.Board = SNAKE.Board || (function() {
                     loadGame();
                 }
             };
+
             SNAKE.addEventListener(window, "keyup", kbShortcut, false);
             SNAKE.addEventListener(welcomeStart, "click", loadGame, false);
             
@@ -696,14 +709,21 @@ SNAKE.Board = SNAKE.Board || (function() {
             tryAgainTxt.innerHTML = "JavaScript Snake<p></p>You died :(.<p></p>";
             var tryAgainStart = document.createElement("button");
             tryAgainStart.appendChild( document.createTextNode("Play Again?"));
-            
+ 
+             var finishingLoadGame = function() {
+                me.setBoardState(1);
+                me.getBoardContainer().focus();                
+            }
             var reloadGame = function() {
                 tmpElm.style.display = "none";
                 me.resetBoard();
-                me.setBoardState(1);
-                me.getBoardContainer().focus();
-            };
-            
+                document.querySelectorAll('.buy-quarters-button')[0].click();
+                window.onQuartersCallback = function(data) {
+                                if (data.txId) {
+                                    return finishingLoadGame();
+                                }   
+                            }
+            };           
             var kbTryAgainShortcut = function(evt) {
                 if (boardState !== 0 || tmpElm.style.display !== "block") {return;}
                 if (!evt) var evt = window.event;
